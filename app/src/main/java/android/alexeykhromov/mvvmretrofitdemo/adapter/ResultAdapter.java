@@ -1,6 +1,7 @@
 package android.alexeykhromov.mvvmretrofitdemo.adapter;
 
 import android.alexeykhromov.mvvmretrofitdemo.R;
+import android.alexeykhromov.mvvmretrofitdemo.databinding.ResuktListItemBinding;
 import android.alexeykhromov.mvvmretrofitdemo.model.Result;
 import android.alexeykhromov.mvvmretrofitdemo.view.MovieDetailsActivity;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -35,21 +37,19 @@ public class ResultAdapter
     @Override
     public ResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.resukt_list_item, parent, false);
-        return new ResultViewHolder(view);
+        ResuktListItemBinding resuktListItemBinding = DataBindingUtil
+                .inflate(LayoutInflater.from(parent.getContext()), R.layout.resukt_list_item, parent, false);
+
+        return new ResultViewHolder(resuktListItemBinding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
 
-        holder.titleTextView.setText(results.get(position).getOriginalTitle());
-        holder.popularityTextView.setText(Double.toString(results.get(position).getPopularity()));
-        String imagePath = "https://image.tmdb.org/t/p/w500/" + results.get(position).getPosterPath();
-        Glide.with(context)
-                .load(imagePath)
-                .placeholder(R.drawable.circle_progress)
-                .into(holder.movieImageView);
+        Result result = results.get(position);
+
+        holder.resuktListItemBinding.setResult(result);
+
     }
 
     @Override
@@ -59,24 +59,18 @@ public class ResultAdapter
 
     public class ResultViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView titleTextView;
-        public TextView popularityTextView;
-        public ImageView movieImageView;
+        private ResuktListItemBinding resuktListItemBinding;
 
-        public ResultViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            titleTextView = itemView.findViewById(R.id.titleTextView);
-            popularityTextView = itemView.findViewById(R.id.popularityTextView);
-            movieImageView = itemView.findViewById(R.id.movieImageView);
-
+        public ResultViewHolder(@NonNull ResuktListItemBinding resulktListItemBinding) {
+            super(resulktListItemBinding.getRoot());
+            this.resuktListItemBinding = resulktListItemBinding;
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     int position = getAdapterPosition();
 
-                    if (position != RecyclerView.NO_POSITION){
+                    if (position != RecyclerView.NO_POSITION) {
                         Result result = results.get(position);
 
                         Intent intent = new Intent(context, MovieDetailsActivity.class);

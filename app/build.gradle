@@ -4,7 +4,10 @@ plugins {
 
 android {
     compileSdk 32
+    dataBinding {
 
+    enabled = true
+    }
     defaultConfig {
         applicationId "android.alexeykhromov.mvvmretrofitdemo"
         minSdk 21
@@ -57,4 +60,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     // Annotation processor
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    //Paging 2 library
+    def paging_version = "2.1.2"
+
+    implementation "androidx.paging:paging-runtime:$paging_version"
 }

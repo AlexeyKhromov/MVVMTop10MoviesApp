@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="result"
+            type="android.alexeykhromov.mvvmretrofitdemo.model.Result" />
+    </data>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="300dp"
         android:layout_marginBottom="9dp"
+        bind:posterPath="@{result.posterPath}"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,6 +48,7 @@
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{result.originalTitle}"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -51,6 +59,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:layout_gravity="center"
+            android:text="@{Integer.toString(result.voteCount)}"
             android:textSize="16sp"
             android:textStyle="italic" />
 
@@ -59,9 +68,11 @@
             android:id="@+id/overviewTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{result.overview}"
             android:layout_gravity="start"
             android:textSize="10sp"
             android:textStyle="normal" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+</layout>
