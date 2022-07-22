@@ -1,6 +1,8 @@
 package android.alexeykhromov.mvvmretrofitdemo.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,10 +14,12 @@ import android.alexeykhromov.mvvmretrofitdemo.model.MovieAPIResponse;
 import android.alexeykhromov.mvvmretrofitdemo.model.Result;
 import android.alexeykhromov.mvvmretrofitdemo.service.MovieApiService;
 import android.alexeykhromov.mvvmretrofitdemo.service.RetrofitInstance;
+import android.alexeykhromov.mvvmretrofitdemo.viewmodel.MainActivityViewModel;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ResultAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private MainActivityViewModel mainActivityViewModel;
 
 
     @Override
@@ -34,46 +39,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       getPopularMovies();
-       swipeRefreshLayout = findViewById(R.id.swiperRefresh);
-       swipeRefreshLayout.setColorSchemeResources(com.google.android.material.R.color.design_default_color_primary);
-       swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-           @Override
-           public void onRefresh() {
-               getPopularMovies();
-           }
-       });
+        mainActivityViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(MainActivityViewModel.class);
+
+        getPopularMovies();
+        swipeRefreshLayout = findViewById(R.id.swiperRefresh);
+        swipeRefreshLayout.setColorSchemeResources(com.google.android.material.R.color.design_default_color_primary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getPopularMovies();
+            }
+        });
 
     }
 
     public void getPopularMovies() {
 
-        MovieApiService movieApiService = RetrofitInstance.getService();
-
-        Call<MovieAPIResponse> call = movieApiService
-                .getPopularMovies(getString(R.string.api_key));
-        call.enqueue(new Callback<MovieAPIResponse>() {
+        mainActivityViewModel.getAllMovieData().observe(this, new Observer<List<Result>>() {
             @Override
-            public void onResponse(Call<MovieAPIResponse> call,
-                                   Response<MovieAPIResponse> response) {
+            public void onChanged(List<Result> resultList) {
 
-                MovieAPIResponse movieApiResponse =
-                        response.body();
-
-                if (movieApiResponse != null && movieApiResponse.getResults() != null){
-                    results =  movieApiResponse.getResults();
-
-                    fillRecyclerView();
-
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<MovieAPIResponse> call,
-                                  Throwable t) {
-
+                results = (ArrayList<Result>) resultList;
+                fillRecyclerView();
             }
         });
 
@@ -83,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview);
         adapter = new ResultAdapter(this, results);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         } else {
