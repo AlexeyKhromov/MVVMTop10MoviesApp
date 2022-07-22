@@ -29,7 +29,8 @@ public class MovieRepository {
         MovieApiService movieApiService = RetrofitInstance.getService();
 
         Call<MovieAPIResponse> call = movieApiService
-                .getPopularMovies(application.getApplicationContext().getString(R.string.api_key));
+                .getPopularMovies(application.getApplicationContext().getString(R.string.api_key), "ru");
+
 
         call.enqueue(new Callback<MovieAPIResponse>() {
             @Override

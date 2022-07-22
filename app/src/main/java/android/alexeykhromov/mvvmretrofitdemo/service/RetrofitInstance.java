@@ -26,6 +26,4 @@ public class RetrofitInstance {
 
 }
 
-//    Call<MovieApiResponse> call = movieApiService
-//            .getPopularMovies(application.getApplicationContext()
-//                    .getString(R.string.api_key), "ru");
+

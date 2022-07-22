@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,14 +24,15 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 public class ResultAdapter
-        extends RecyclerView.Adapter<ResultAdapter.ResultViewHolder> {
+        extends PagedListAdapter<Result,ResultAdapter.ResultViewHolder> {
 
     private Context context;
-    private ArrayList<Result> results;
+   // private ArrayList<Result> results;
 
-    public ResultAdapter(Context context, ArrayList<Result> results) {
+    public ResultAdapter(Context context) {
+        super(Result.CALLBACK);
         this.context = context;
-        this.results = results;
+     //   this.results = results;
     }
 
     @NonNull
@@ -46,16 +48,16 @@ public class ResultAdapter
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
 
-        Result result = results.get(position);
+        Result result = getItem(position);
 
         holder.resuktListItemBinding.setResult(result);
 
     }
 
-    @Override
-    public int getItemCount() {
-        return results.size();
-    }
+//    @Override
+//    public int getItemCount() {
+//        return results.size();
+//    }
 
     public class ResultViewHolder extends RecyclerView.ViewHolder {
 
@@ -71,7 +73,7 @@ public class ResultAdapter
                     int position = getAdapterPosition();
 
                     if (position != RecyclerView.NO_POSITION) {
-                        Result result = results.get(position);
+                        Result result = getItem(position);
 
                         Intent intent = new Intent(context, MovieDetailsActivity.class);
                         intent.putExtra("movieData", result);

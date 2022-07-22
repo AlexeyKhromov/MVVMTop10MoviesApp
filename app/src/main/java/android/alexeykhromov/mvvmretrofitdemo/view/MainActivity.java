@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,9 +20,11 @@ import android.alexeykhromov.mvvmretrofitdemo.service.RetrofitInstance;
 import android.alexeykhromov.mvvmretrofitdemo.viewmodel.MainActivityViewModel;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,7 +32,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Result> results;
+    private PagedList<Result> results;
     private RecyclerView recyclerView;
     private ResultAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -52,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 4000);
+
                 getPopularMovies();
             }
         });
@@ -60,11 +71,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void getPopularMovies() {
 
-        mainActivityViewModel.getAllMovieData().observe(this, new Observer<List<Result>>() {
-            @Override
-            public void onChanged(List<Result> resultList) {
+//        mainActivityViewModel.getAllMovieData().observe(this, new Observer<List<Result>>() {
+//            @Override
+//            public void onChanged(List<Result> resultList) {
+//
+//                results = (ArrayList<Result>) resultList;
+//                fillRecyclerView();
+//            }
+//        });
 
-                results = (ArrayList<Result>) resultList;
+        mainActivityViewModel.getPagedListLiveData().observe(this, new Observer<PagedList<Result>>() {
+            @Override
+            public void onChanged(PagedList<Result> resultList) {
+                results = resultList;
                 fillRecyclerView();
             }
         });
@@ -73,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillRecyclerView() {
         recyclerView = activityMainBinding.recyclerview;
-        adapter = new ResultAdapter(this, results);
+        adapter = new ResultAdapter(this);
+        adapter.submitList(results);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
